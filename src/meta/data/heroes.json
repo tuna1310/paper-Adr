@@ -1,0 +1,119 @@
+{
+  "heroes": [
+    {
+      "id": "cuby",
+      "name": "Khối Vuông",
+      "rarity": "common",
+      "rarityLabel": "Phổ biến",
+      "color": "#FF4757",
+      "maxLevel": 10,
+      "cardsRequiredPerLevel": [10, 20, 40, 80, 150, 300, 500, 800, 1200, 2000],
+      "coinsPerLevel": [100, 250, 600, 1500, 3000, 6000, 12000, 25000, 50000, 100000],
+      "skill": {
+        "id": "dash",
+        "name": "Bứt Tốc",
+        "desc": "Tăng 50% tốc độ di chuyển trong 3.5 giây, lướt qua vùng đất nguy hiểm an toàn.",
+        "cooldownSec": 15,
+        "durationSec": 3.5
+      },
+      "baseStats": { "speed": 100, "turnRate": 100, "bonusStartPercent": 2.0 },
+      "unlockedByDefault": true
+    },
+    {
+      "id": "shieldy",
+      "name": "Khiên Thép",
+      "rarity": "rare",
+      "rarityLabel": "Hiếm",
+      "color": "#1E90FF",
+      "maxLevel": 10,
+      "cardsRequiredPerLevel": [10, 20, 40, 80, 150, 300, 500, 800, 1200, 2000],
+      "coinsPerLevel": [150, 350, 800, 2000, 4500, 9000, 18000, 35000, 70000, 150000],
+      "skill": {
+        "id": "shield",
+        "name": "Khiên Bất Tử",
+        "desc": "Bảo vệ đuôi khỏi 1 lần chạm chết người, kéo dài 4 giây.",
+        "cooldownSec": 20,
+        "durationSec": 4.0
+      },
+      "baseStats": { "speed": 95, "turnRate": 95, "bonusStartPercent": 2.5 },
+      "unlockedByDefault": false
+    },
+    {
+      "id": "magneto",
+      "name": "Lực Hút",
+      "rarity": "rare",
+      "rarityLabel": "Hiếm",
+      "color": "#9B59B6",
+      "maxLevel": 10,
+      "cardsRequiredPerLevel": [10, 20, 40, 80, 150, 300, 500, 800, 1200, 2000],
+      "coinsPerLevel": [150, 350, 800, 2000, 4500, 9000, 18000, 35000, 70000, 150000],
+      "skill": {
+        "id": "magnet",
+        "name": "Siêu Lực Hút",
+        "desc": "Hút toàn bộ vật phẩm, chấm vàng và đá quý trong phạm vi 8 ô xung quanh về phía mình.",
+        "cooldownSec": 18,
+        "durationSec": 5.0
+      },
+      "baseStats": { "speed": 100, "turnRate": 105, "bonusStartPercent": 2.0 },
+      "unlockedByDefault": false
+    },
+    {
+      "id": "pulsar",
+      "name": "Xung Sóng",
+      "rarity": "epic",
+      "rarityLabel": "Sử thi",
+      "color": "#2ED573",
+      "maxLevel": 10,
+      "cardsRequiredPerLevel": [10, 20, 40, 80, 150, 300, 500, 800, 1200, 2000],
+      "coinsPerLevel": [250, 600, 1500, 3500, 8000, 16000, 32000, 60000, 120000, 250000],
+      "skill": {
+        "id": "pulse",
+        "name": "Sóng Địa Chấn",
+        "desc": "Phát ra sóng xung kích làm choáng các đối thủ lân cận 2.5 giây.",
+        "cooldownSec": 22,
+        "durationSec": 2.5
+      },
+      "baseStats": { "speed": 105, "turnRate": 100, "bonusStartPercent": 3.0 },
+      "unlockedByDefault": false
+    },
+    {
+      "id": "blaster",
+      "name": "Vệt Rộng",
+      "rarity": "epic",
+      "rarityLabel": "Sử thi",
+      "color": "#FFA502",
+      "maxLevel": 10,
+      "cardsRequiredPerLevel": [10, 20, 40, 80, 150, 300, 500, 800, 1200, 2000],
+      "coinsPerLevel": [250, 600, 1500, 3500, 8000, 16000, 32000, 60000, 120000, 250000],
+      "skill": {
+        "id": "wide_trail",
+        "name": "Vệt Khổng Lồ",
+        "desc": "Đuôi nở rộng gấp đôi và tự động gom đất lân cận khi di chuyển trong 4 giây.",
+        "cooldownSec": 25,
+        "durationSec": 4.0
+      },
+      "baseStats": { "speed": 100, "turnRate": 90, "bonusStartPercent": 3.5 },
+      "unlockedByDefault": false
+    },
+    {
+      "id": "titan",
+      "name": "Khổng Lồ",
+      "rarity": "legendary",
+      "rarityLabel": "Huyền thoại",
+      "color": "#E056FD",
+      "maxLevel": 10,
+      "cardsRequiredPerLevel": [10, 20, 40, 80, 150, 300, 500, 800, 1200, 2000],
+      "coinsPerLevel": [500, 1200, 3000, 7000, 16000, 35000, 70000, 140000, 280000, 500000],
+      "skill": {
+        "id": "giant_aura",
+        "name": "Hào Quang Titan",
+        "desc": "Kích hoạt vòng sát thương khổng lồ bán kính 6 ô lập tức tiêu diệt bất cứ ai xâm phạm.",
+        "cooldownSec": 30,
+        "durationSec": 6.0
+      },
+      "baseStats": { "speed": 110, "turnRate": 110, "bonusStartPercent": 5.0 },
+      "unlockedByDefault": false
+    }
+  ]
+}
+

@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+app/build/
+.gradle/
+.kotlin/
+local.properties
+android/.gradle/
+android/build/
+android/app/build/
+paper-territory/
+.worktrees/
+*.apk
+img/*.mp4
+!builds/app-debug.apk

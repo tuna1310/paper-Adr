@@ -1,0 +1,121 @@
+{
+  "dailyChestRequiredMissions": 3,
+  "dailyChestProbabilities": {
+    "gold": 0.80,
+    "ruby": 0.10,
+    "skin": 0.10
+  },
+  "dailyChestReward": {
+    "coins": 1000,
+    "gems": 25,
+    "heroCards": 10
+  },
+  "dailyPool": [
+    {
+      "id": "daily_play",
+      "title": "Chơi 5 trận đấu",
+      "description": "Tham gia 5 trận chiến bất kỳ trên đấu trường",
+      "target": 5,
+      "rewardCoins": 250,
+      "rewardType": "coins"
+    },
+    {
+      "id": "daily_kill",
+      "title": "Hạ gục 15 đối thủ",
+      "description": "Cắt đuôi hoặc tiêu diệt 15 đối thủ",
+      "target": 15,
+      "rewardCoins": 250,
+      "rewardType": "coins"
+    },
+    {
+      "id": "daily_percent",
+      "title": "Chiếm 20% bản đồ",
+      "description": "Đạt 20% diện tích lãnh thổ trong một ván",
+      "target": 20,
+      "rewardCoins": 250,
+      "rewardType": "coins"
+    },
+    {
+      "id": "daily_pickup",
+      "title": "Thu thập 5 chấm vàng",
+      "description": "Nhặt 5 chấm tròn vàng hoặc hộp quà tăng tốc",
+      "target": 5,
+      "rewardCoins": 250,
+      "rewardType": "coins"
+    },
+    {
+      "id": "daily_loops",
+      "title": "Tạo 15 vòng lặp chiếm đất",
+      "description": "Khép vòng về đất mình 15 lần trong trận",
+      "target": 15,
+      "rewardCoins": 300,
+      "rewardType": "coins"
+    },
+    {
+      "id": "daily_rim_boost",
+      "title": "Lướt rìa bứt tốc 5 lần",
+      "description": "Trượt dọc rìa bản đồ để sạc đầy tia lửa và bứt tốc",
+      "target": 5,
+      "rewardCoins": 300,
+      "rewardType": "coins"
+    },
+    {
+      "id": "daily_carve",
+      "title": "Cướp đất dọc đường 50 ô",
+      "description": "Đi xuyên qua lãnh thổ đối phương để ăn đất trực tiếp",
+      "target": 50,
+      "rewardCoins": 350,
+      "rewardType": "coins"
+    },
+    {
+      "id": "daily_win",
+      "title": "Giành 1 chiến thắng Áp Đảo",
+      "description": "Đạt trên 60% bản đồ để chiến thắng màn chơi",
+      "target": 1,
+      "rewardCoins": 400,
+      "rewardType": "coins"
+    }
+  ],
+  "lifetimeMilestones": [
+    {
+      "id": "lifetime_play_75",
+      "title": "Chơi 75 trò chơi",
+      "description": "Chinh phục đấu trường trong 75 trận",
+      "target": 75,
+      "rewardStars": 500,
+      "rewardType": "stars"
+    },
+    {
+      "id": "lifetime_kill_300",
+      "title": "Giết 300 đối thủ",
+      "description": "Trở thành thợ săn sát thủ với 300 mạng hạ gục",
+      "target": 300,
+      "rewardStars": 500,
+      "rewardType": "stars"
+    },
+    {
+      "id": "lifetime_countries_10",
+      "title": "Hoàn thành 10 quốc gia",
+      "description": "Chinh phục 100% lãnh thổ của 10 quốc gia đại diện",
+      "target": 10,
+      "rewardStars": 500,
+      "rewardType": "stars"
+    },
+    {
+      "id": "lifetime_skins_20",
+      "title": "Thu thập 20 Nhân vật",
+      "description": "Mở khóa 20 trang phục (Skin) độc đáo",
+      "target": 20,
+      "rewardStars": 500,
+      "rewardType": "stars"
+    },
+    {
+      "id": "lifetime_bonus_games_5",
+      "title": "Đạt 5 Trò chơi Thưởng",
+      "description": "Hoàn thành toàn bộ 8 quốc gia của châu lục",
+      "target": 5,
+      "rewardStars": 500,
+      "rewardType": "stars"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "continents": [
+    { "id": "north_america", "name": "BẮC MỸ", "total": 8 },
+    { "id": "south_america", "name": "NAM MỸ", "total": 8 },
+    { "id": "europe", "name": "CHÂU ÂU", "total": 8 },
+    { "id": "asia", "name": "CHÂU Á", "total": 8 },
+    { "id": "africa", "name": "CHÂU PHI", "total": 8 },
+    { "id": "oceania", "name": "CHÂU ĐẠI DƯƠNG", "total": 8 },
+    { "id": "antarctica", "name": "NAM CỰC", "total": 8 }
+  ],
+  "countries": [
+    { "id": "nicaragua", "name": "Nicaragua", "continent": "BẮC MỸ", "continentId": "north_america", "order": 1, "difficulty": 1, "unlockedByDefault": true, "flagColors": ["#0067C6", "#FFFFFF", "#0067C6"] },
+    { "id": "costa_rica", "name": "Costa Rica", "continent": "BẮC MỸ", "continentId": "north_america", "order": 2, "difficulty": 1, "flagColors": ["#002B7F", "#CE1126", "#002B7F"] },
+    { "id": "panama", "name": "Panama", "continent": "BẮC MỸ", "continentId": "north_america", "order": 3, "difficulty": 2, "flagColors": ["#FFFFFF", "#005293", "#D21034"] },
+    { "id": "cuba", "name": "Cuba", "continent": "BẮC MỸ", "continentId": "north_america", "order": 4, "difficulty": 2, "flagColors": ["#002A8F", "#FFFFFF", "#CB1515"] },
+    { "id": "mexico", "name": "Mexico", "continent": "BẮC MỸ", "continentId": "north_america", "order": 5, "difficulty": 3, "flagColors": ["#006847", "#FFFFFF", "#CE1126"] },
+    { "id": "usa", "name": "Mỹ", "continent": "BẮC MỸ", "continentId": "north_america", "order": 6, "difficulty": 3, "flagColors": ["#B22234", "#FFFFFF", "#3C3B6E"] },
+    { "id": "canada", "name": "Canada", "continent": "BẮC MỸ", "continentId": "north_america", "order": 7, "difficulty": 4, "flagColors": ["#FF0000", "#FFFFFF", "#FF0000"] },
+    { "id": "jamaica", "name": "Jamaica", "continent": "BẮC MỸ", "continentId": "north_america", "order": 8, "difficulty": 4, "flagColors": ["#FED100", "#009B3A", "#000000"] },
+
+    { "id": "brazil", "name": "Brazil", "continent": "NAM MỸ", "continentId": "south_america", "order": 9, "difficulty": 2, "flagColors": ["#009739", "#FEDD00", "#012169"] },
+    { "id": "argentina", "name": "Argentina", "continent": "NAM MỸ", "continentId": "south_america", "order": 10, "difficulty": 2, "flagColors": ["#75AADB", "#FFFFFF", "#75AADB"] },
+    { "id": "colombia", "name": "Colombia", "continent": "NAM MỸ", "continentId": "south_america", "order": 11, "difficulty": 2, "flagColors": ["#FCD116", "#003893", "#CE1126"] },
+    { "id": "chile", "name": "Chile", "continent": "NAM MỸ", "continentId": "south_america", "order": 12, "difficulty": 3, "flagColors": ["#FFFFFF", "#D52B1E", "#0039A6"] },
+    { "id": "peru", "name": "Peru", "continent": "NAM MỸ", "continentId": "south_america", "order": 13, "difficulty": 3, "flagColors": ["#D91023", "#FFFFFF", "#D91023"] },
+    { "id": "venezuela", "name": "Venezuela", "continent": "NAM MỸ", "continentId": "south_america", "order": 14, "difficulty": 3, "flagColors": ["#FCE300", "#00247D", "#CF142B"] },
+    { "id": "uruguay", "name": "Uruguay", "continent": "NAM MỸ", "continentId": "south_america", "order": 15, "difficulty": 4, "flagColors": ["#FFFFFF", "#0038A8", "#FCD116"] },
+    { "id": "ecuador", "name": "Ecuador", "continent": "NAM MỸ", "continentId": "south_america", "order": 16, "difficulty": 4, "flagColors": ["#FFDD00", "#034EA2", "#ED1C24"] },
+
+    { "id": "france", "name": "Pháp", "continent": "CHÂU ÂU", "continentId": "europe", "order": 17, "difficulty": 2, "flagColors": ["#002654", "#FFFFFF", "#ED2939"] },
+    { "id": "germany", "name": "Đức", "continent": "CHÂU ÂU", "continentId": "europe", "order": 18, "difficulty": 3, "flagColors": ["#000000", "#DD0000", "#FFCE00"] },
+    { "id": "italy", "name": "Ý", "continent": "CHÂU ÂU", "continentId": "europe", "order": 19, "difficulty": 2, "flagColors": ["#009246", "#FFFFFF", "#CE2B37"] },
+    { "id": "spain", "name": "Tây Ban Nha", "continent": "CHÂU ÂU", "continentId": "europe", "order": 20, "difficulty": 3, "flagColors": ["#AA151B", "#F1BF00", "#AA151B"] },
+    { "id": "uk", "name": "Vương Quốc Anh", "continent": "CHÂU ÂU", "continentId": "europe", "order": 21, "difficulty": 3, "flagColors": ["#012169", "#FFFFFF", "#C8102E"] },
+    { "id": "netherlands", "name": "Hà Lan", "continent": "CHÂU ÂU", "continentId": "europe", "order": 22, "difficulty": 3, "flagColors": ["#AE1C28", "#FFFFFF", "#21468B"] },
+    { "id": "switzerland", "name": "Thụy Sĩ", "continent": "CHÂU ÂU", "continentId": "europe", "order": 23, "difficulty": 4, "flagColors": ["#D52B1E", "#FFFFFF", "#D52B1E"] },
+    { "id": "greece", "name": "Hy Lạp", "continent": "CHÂU ÂU", "continentId": "europe", "order": 24, "difficulty": 4, "flagColors": ["#0D5EAF", "#FFFFFF", "#0D5EAF"] },
+
+    { "id": "vietnam", "name": "Việt Nam", "continent": "CHÂU Á", "continentId": "asia", "order": 25, "difficulty": 2, "flagColors": ["#DA251D", "#FFFF00", "#DA251D"] },
+    { "id": "japan", "name": "Nhật Bản", "continent": "CHÂU Á", "continentId": "asia", "order": 26, "difficulty": 3, "flagColors": ["#FFFFFF", "#BC002D", "#FFFFFF"] },
+    { "id": "korea", "name": "Hàn Quốc", "continent": "CHÂU Á", "continentId": "asia", "order": 27, "difficulty": 3, "flagColors": ["#FFFFFF", "#CD2E3A", "#0047A0"] },
+    { "id": "thailand", "name": "Thái Lan", "continent": "CHÂU Á", "continentId": "asia", "order": 28, "difficulty": 3, "flagColors": ["#A51931", "#FFFFFF", "#2D2A4A"] },
+    { "id": "singapore", "name": "Singapore", "continent": "CHÂU Á", "continentId": "asia", "order": 29, "difficulty": 4, "flagColors": ["#ED2939", "#FFFFFF", "#ED2939"] },
+    { "id": "india", "name": "Ấn Độ", "continent": "CHÂU Á", "continentId": "asia", "order": 30, "difficulty": 4, "flagColors": ["#FF9933", "#FFFFFF", "#138808"] },
+    { "id": "china", "name": "Trung Quốc", "continent": "CHÂU Á", "continentId": "asia", "order": 31, "difficulty": 4, "flagColors": ["#DE2910", "#FFDE00", "#DE2910"] },
+    { "id": "indonesia", "name": "Indonesia", "continent": "CHÂU Á", "continentId": "asia", "order": 32, "difficulty": 5, "flagColors": ["#FF0000", "#FFFFFF", "#FF0000"] },
+
+    { "id": "egypt", "name": "Ai Cập", "continent": "CHÂU PHI", "continentId": "africa", "order": 33, "difficulty": 3, "flagColors": ["#CE1126", "#FFFFFF", "#000000"] },
+    { "id": "south_africa", "name": "Nam Phi", "continent": "CHÂU PHI", "continentId": "africa", "order": 34, "difficulty": 3, "flagColors": ["#007749", "#FFB81C", "#001489"] },
+    { "id": "nigeria", "name": "Nigeria", "continent": "CHÂU PHI", "continentId": "africa", "order": 35, "difficulty": 3, "flagColors": ["#008751", "#FFFFFF", "#008751"] },
+    { "id": "kenya", "name": "Kenya", "continent": "CHÂU PHI", "continentId": "africa", "order": 36, "difficulty": 4, "flagColors": ["#000000", "#BB0000", "#006600"] },
+    { "id": "morocco", "name": "Ma-rốc", "continent": "CHÂU PHI", "continentId": "africa", "order": 37, "difficulty": 4, "flagColors": ["#C1272D", "#006233", "#C1272D"] },
+    { "id": "ghana", "name": "Ghana", "continent": "CHÂU PHI", "continentId": "africa", "order": 38, "difficulty": 4, "flagColors": ["#CF0921", "#FCD20F", "#006B3F"] },
+    { "id": "madagascar", "name": "Madagascar", "continent": "CHÂU PHI", "continentId": "africa", "order": 39, "difficulty": 5, "flagColors": ["#FFFFFF", "#FC3D32", "#007E3A"] },
+    { "id": "ethiopia", "name": "Ethiopia", "continent": "CHÂU PHI", "continentId": "africa", "order": 40, "difficulty": 5, "flagColors": ["#078930", "#FCDD09", "#DA121A"] },
+
+    { "id": "australia", "name": "Úc", "continent": "CHÂU ĐẠI DƯƠNG", "continentId": "oceania", "order": 41, "difficulty": 3, "flagColors": ["#00008B", "#FFFFFF", "#FF0000"] },
+    { "id": "new_zealand", "name": "New Zealand", "continent": "CHÂU ĐẠI DƯƠNG", "continentId": "oceania", "order": 42, "difficulty": 3, "flagColors": ["#00247D", "#CC142B", "#FFFFFF"] },
+    { "id": "fiji", "name": "Fiji", "continent": "CHÂU ĐẠI DƯƠNG", "continentId": "oceania", "order": 43, "difficulty": 4, "flagColors": ["#68BFE5", "#CE1126", "#FFFFFF"] },
+    { "id": "samoa", "name": "Samoa", "continent": "CHÂU ĐẠI DƯƠNG", "continentId": "oceania", "order": 44, "difficulty": 4, "flagColors": ["#CE1126", "#002B7F", "#FFFFFF"] },
+    { "id": "papua_new_guinea", "name": "Papua New Guinea", "continent": "CHÂU ĐẠI DƯƠNG", "continentId": "oceania", "order": 45, "difficulty": 4, "flagColors": ["#CE1126", "#000000", "#FFCD00"] },
+    { "id": "tonga", "name": "Tonga", "continent": "CHÂU ĐẠI DƯƠNG", "continentId": "oceania", "order": 46, "difficulty": 5, "flagColors": ["#C10000", "#FFFFFF", "#C10000"] },
+    { "id": "vanuatu", "name": "Vanuatu", "continent": "CHÂU ĐẠI DƯƠNG", "continentId": "oceania", "order": 47, "difficulty": 5, "flagColors": ["#D21034", "#009543", "#FDCE12"] },
+    { "id": "palau", "name": "Palau", "continent": "CHÂU ĐẠI DƯƠNG", "continentId": "oceania", "order": 48, "difficulty": 5, "flagColors": ["#4AADD6", "#FFDE00", "#4AADD6"] },
+
+    { "id": "ross_ice_shelf", "name": "Thềm Băng Ross", "continent": "NAM CỰC", "continentId": "antarctica", "order": 49, "difficulty": 4, "flagColors": ["#A0E7E5", "#FFFFFF", "#1890FF"] },
+    { "id": "palmer_station", "name": "Trạm Palmer", "continent": "NAM CỰC", "continentId": "antarctica", "order": 50, "difficulty": 4, "flagColors": ["#B2BEC3", "#DFE6E9", "#0984E3"] },
+    { "id": "mcmurdo", "name": "Trạm McMurdo", "continent": "NAM CỰC", "continentId": "antarctica", "order": 51, "difficulty": 5, "flagColors": ["#74B9FF", "#0984E3", "#FFFFFF"] },
+    { "id": "vostok_station", "name": "Trạm Vostok", "continent": "NAM CỰC", "continentId": "antarctica", "order": 52, "difficulty": 5, "flagColors": ["#81ECEC", "#00CEC9", "#FFFFFF"] },
+    { "id": "amundsen_scott", "name": "Amundsen-Scott", "continent": "NAM CỰC", "continentId": "antarctica", "order": 53, "difficulty": 5, "flagColors": ["#DFF9FB", "#130F40", "#FFFFFF"] },
+    { "id": "weddell_sea", "name": "Biển Weddell", "continent": "NAM CỰC", "continentId": "antarctica", "order": 54, "difficulty": 5, "flagColors": ["#C7ECEE", "#535C68", "#FFFFFF"] },
+    { "id": "queen_maud", "name": "Vùng Queen Maud", "continent": "NAM CỰC", "continentId": "antarctica", "order": 55, "difficulty": 5, "flagColors": ["#686DE0", "#4834D4", "#FFFFFF"] },
+    { "id": "ronne_ice_shelf", "name": "Thềm Băng Ronne", "continent": "NAM CỰC", "continentId": "antarctica", "order": 56, "difficulty": 5, "flagColors": ["#7ED6DF", "#22A6B3", "#FFFFFF"] }
+  ]
+}
+
