@@ -3,9 +3,11 @@ import { GameEngine } from './engine/GameEngine';
 import { DEFAULT_PLAYERS_CONFIG, PERF_CONFIG } from './config';
 import { metaManager } from './meta/MetaManager';
 import { NavFrame } from './ui/NavFrame';
+import { LoadingScreen } from './ui/screens/LoadingScreen';
 import { GameRenderer } from './ui/GameRenderer';
 import { TerritoryRenderer } from './ui/TerritoryRenderer';
 import { InputController } from './ui/InputController';
+import { TIMING_MS } from './ui/theme';
 
 const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d', { alpha: false })!;
@@ -36,6 +38,15 @@ const inputController = new InputController(engine, navFrame, canvas);
 
 // Viewport & Camera state (capped DPR for smooth 60 FPS on mid/low-end phones)
 const container = document.getElementById('game-container') || document.body;
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('skipLoading') !== '1') {
+  const holdLoading = urlParams.get('holdLoading') === '1';
+  const loadingScreen = new LoadingScreen(container, {
+    durationMs: holdLoading ? Number.POSITIVE_INFINITY : TIMING_MS.LOADING_MIN_DISPLAY,
+  });
+  (window as any)._loadingScreen = loadingScreen;
+}
 let viewWidth = container.clientWidth || window.innerWidth;
 let viewHeight = container.clientHeight || window.innerHeight;
 let lowQualityMode = false;
