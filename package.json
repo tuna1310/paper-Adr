@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "cap:sync": "npx cap sync android",
+    "android:sync": "npm run build && npx cap sync android",
+    "android:build": "npm run android:sync && cd android && gradlew.bat assembleDebug",
+    "android:run": "npx cap run android",
+    "android:live": "npx cap run android -l --external"
   },
   "devDependencies": {
     "puppeteer-core": "^25.16.0",
