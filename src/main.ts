@@ -42,8 +42,14 @@ const container = document.getElementById('game-container') || document.body;
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('skipLoading') !== '1') {
   const holdLoading = urlParams.get('holdLoading') === '1';
+  const skipToast = urlParams.get('skipToast') === '1';
   const loadingScreen = new LoadingScreen(container, {
     durationMs: holdLoading ? Number.POSITIVE_INFINITY : TIMING_MS.LOADING_MIN_DISPLAY,
+    onComplete: () => {
+      if (!skipToast && navFrame) {
+        navFrame.showLoginToast(metaManager.getState().profile.name);
+      }
+    },
   });
   (window as any)._loadingScreen = loadingScreen;
 }

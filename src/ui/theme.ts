@@ -93,34 +93,42 @@ export const LOADING_THEME = {
 } as const;
 
 export const NAV_THEME = {
-  bgTop: '#1DAEFB',
-  bgCenterGlow: '#48E9EE',
-  pillNavy: '#183BA1',
+  bgTop: '#0091FE',
+  bgMid: '#21CAFD',
+  bgCenterGlow: '#4DF3E0',
+  pillNavy: '#102B9D',
   pillStroke: '#071A75',
   avatarRingWhite: '#FFFFFF',
   avatarRingStroke: '#071A75',
   plusBadgeGreen: '#5CE61C',
   plusBadgeStroke: '#1D7306',
 
+  countryTrackBg: '#000E7F',
+  countryProgressPurple: '#462FA6',
+
   playTop: '#FEFCFD',
   playGold: '#FFE804',
   playRimGold: '#FFC400',
   soonWing: '#3EBEFE',
+  soonWingBot: '#199FFF',
   rankWing: '#F8A254',
-  navBarLight: '#D4E8FD',
+  rankWingBot: '#E87314',
+  navBarTop: '#E3F1FE',
+  navBarLight: '#D1E6FC',
   navBarBorder: '#1665D8',
   navActiveBg: '#1994FA',
 
   layout: {
-    coinPillTopPct: 8.3,
+    coinPillTopPct: 8.34,
     coinPillBottomPct: 11.3,
-    avatarLeftPct: 5.5,
+    avatarTopPct: 7.51,
+    avatarLeftPct: 4.5,
     avatarDiameterPct: 10.5,
     playWidthPct: 29.4,
-    playTopPct: 83.1,
-    playBottomPct: 95.2,
-    navBarTopPct: 89.1,
-    navBarHeightPct: 10.9,
+    playTopPct: 82.41,
+    playBottomPct: 95.76,
+    navBarTopPct: 88.96,
+    navBarHeightPct: 11.04,
   },
 } as const;
 

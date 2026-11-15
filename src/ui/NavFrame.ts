@@ -1,6 +1,16 @@
 import './subpages.css';
 import { metaManager } from '../meta/MetaManager';
-import { coinSvg, gemSvg, gearSvg, avatarCubeSvg, shopAwningSvg, heroesSvg, missionsSvg, globeSvg, homeHouseSvg } from './svgIcons';
+import {
+  coinSvg,
+  gemSvg,
+  gearSvg,
+  avatarCubeSvg,
+  shopAwningSvg,
+  heroesSvg,
+  missionsSvg,
+  globeSvg,
+  homeHouseSvg,
+} from './svgIcons';
 import { uiSound } from './uiSound';
 import { HomeScreen } from './screens/HomeScreen';
 import { ShopScreen } from './screens/ShopScreen';
@@ -16,6 +26,7 @@ export class NavFrame {
   private currentScreenInstance: any = null;
   private onStartGameCallback: () => void;
   private unsubscribeMeta: (() => void) | null = null;
+  private toastTimerId: number | null = null;
 
   constructor(container: HTMLElement, onStartGame: () => void) {
     this.container = container;
@@ -29,14 +40,14 @@ export class NavFrame {
         <!-- Top Navigation Bar -->
         <header class="top-nav-bar">
           <button class="top-avatar-btn ui-btn-3d" id="btn-avatar" title="Về màn hình chính">
-            ${avatarCubeSvg(42)}
+            ${avatarCubeSvg(38)}
           </button>
 
           <div class="top-currency-container">
             <!-- Coin Pill -->
             <div class="currency-pill" id="pill-coins">
               <div class="currency-icon-wrap">
-                <div class="currency-icon">${coinSvg(34)}</div>
+                <div class="currency-icon">${coinSvg(32)}</div>
                 <button class="currency-add-btn ui-btn-3d" id="btn-add-coins">+</button>
               </div>
               <span class="currency-amount" id="val-coins">10,51K</span>
@@ -45,17 +56,23 @@ export class NavFrame {
             <!-- Gem Pill -->
             <div class="currency-pill" id="pill-gems">
               <div class="currency-icon-wrap">
-                <div class="currency-icon">${gemSvg(32)}</div>
+                <div class="currency-icon">${gemSvg(30)}</div>
                 <button class="currency-add-btn ui-btn-3d" id="btn-add-gems">+</button>
               </div>
               <span class="currency-amount" id="val-gems">44</span>
             </div>
           </div>
 
-          <button class="top-settings-btn ui-btn-3d" id="btn-settings">
-            ${gearSvg(34)}
+          <button class="top-settings-btn ui-btn-3d" id="btn-settings" title="Cài đặt">
+            ${gearSvg(32)}
           </button>
         </header>
+
+        <!-- Login / Status Toast -->
+        <div class="nav-toast-pill" id="nav-login-toast" aria-live="polite" style="display:none;"></div>
+
+        <!-- Settings Modal (hidden until #btn-settings clicked) -->
+        <div class="nav-settings-backdrop" id="nav-settings-modal" style="display:none;"></div>
 
         <!-- Main Screen Viewport -->
         <main class="screens-viewport" id="screens-viewport"></main>
@@ -65,7 +82,7 @@ export class NavFrame {
           <!-- 1. Shop -->
           <div class="nav-tab-item ui-btn-3d" data-tab="shop">
             <div class="nav-tab-card">
-              ${shopAwningSvg(30)}
+              ${shopAwningSvg(32)}
               <span class="nav-tab-label">Cửa hàng</span>
               <div class="tab-badge-notification">!</div>
             </div>
@@ -74,22 +91,22 @@ export class NavFrame {
           <!-- 2. Heroes -->
           <div class="nav-tab-item ui-btn-3d" data-tab="heroes">
             <div class="nav-tab-card">
-              ${heroesSvg(30)}
+              ${heroesSvg(32)}
               <span class="nav-tab-label">Anh hùng</span>
             </div>
           </div>
 
           <!-- Center Home Slot -->
           <div class="nav-tab-spacer">
-            <button class="nav-center-home-btn ui-btn-3d" data-tab="home" id="btn-nav-home" style="display:none;">
-              ${homeHouseSvg(28)}
+            <button class="nav-center-home-btn ui-btn-3d" data-tab="home" id="btn-nav-home" title="Trang chủ" style="display:none;">
+              ${homeHouseSvg(30)}
             </button>
           </div>
 
           <!-- 4. Missions -->
           <div class="nav-tab-item ui-btn-3d" data-tab="missions">
             <div class="nav-tab-card">
-              ${missionsSvg(30)}
+              ${missionsSvg(32)}
               <span class="nav-tab-label">Nhiệm vụ</span>
               <div class="tab-badge-notification" id="badge-missions">3</div>
             </div>
@@ -98,7 +115,7 @@ export class NavFrame {
           <!-- 5. World -->
           <div class="nav-tab-item ui-btn-3d" data-tab="world">
             <div class="nav-tab-card">
-              ${globeSvg(30)}
+              ${globeSvg(32)}
               <span class="nav-tab-label">Thế giới</span>
             </div>
           </div>
@@ -145,6 +162,14 @@ export class NavFrame {
       });
     }
 
+    const settingsBtn = this.container.querySelector('#btn-settings');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        uiSound.playButtonPop();
+        this.openSettingsModal();
+      });
+    }
+
     const addCoinsBtn = this.container.querySelector('#btn-add-coins');
     if (addCoinsBtn) {
       addCoinsBtn.addEventListener('click', (e) => {
@@ -173,6 +198,89 @@ export class NavFrame {
         }
       });
     });
+  }
+
+  public showToast(message: string, durationMs = 2400): void {
+    const toast = this.container.querySelector('#nav-login-toast') as HTMLElement | null;
+    if (!toast) return;
+    if (this.toastTimerId !== null) {
+      window.clearTimeout(this.toastTimerId);
+      this.toastTimerId = null;
+    }
+    toast.textContent = message;
+    toast.classList.remove('nav-toast-hide');
+    toast.style.display = 'inline-flex';
+    this.toastTimerId = window.setTimeout(() => {
+      toast.classList.add('nav-toast-hide');
+      window.setTimeout(() => {
+        toast.style.display = 'none';
+      }, 220);
+      this.toastTimerId = null;
+    }, durationMs);
+  }
+
+  public showLoginToast(playerName: string): void {
+    const cleanName = (playerName || 'Player').trim();
+    this.showToast(`Đã đăng nhập với tên ${cleanName}`, 2400);
+  }
+
+  public openSettingsModal(): void {
+    const backdrop = this.container.querySelector('#nav-settings-modal') as HTMLElement | null;
+    if (!backdrop) return;
+    const renderModal = () => {
+      const s = metaManager.getState().settings;
+      backdrop.innerHTML = `
+        <div class="nav-settings-card" role="dialog" aria-modal="true" aria-label="Cài đặt">
+          <div class="nav-settings-header">
+            <span class="nav-settings-title ui-text-outlined">CÀI ĐẶT</span>
+            <button class="nav-settings-close ui-btn-3d" id="btn-close-settings" aria-label="Đóng">✕</button>
+          </div>
+          <div class="nav-settings-rows">
+            ${this.renderSettingToggle('soundEnabled', 'Âm thanh', s.soundEnabled)}
+            ${this.renderSettingToggle('musicEnabled', 'Nhạc nền', s.musicEnabled)}
+            ${this.renderSettingToggle('vibrationEnabled', 'Rung phản hồi', s.vibrationEnabled)}
+            ${this.renderSettingToggle('particlesEnabled', 'Hiệu ứng hạt', s.particlesEnabled)}
+          </div>
+        </div>
+      `;
+      backdrop.querySelector('#btn-close-settings')?.addEventListener('click', () => {
+        uiSound.playButtonPop();
+        this.closeSettingsModal();
+      });
+      backdrop.querySelectorAll<HTMLButtonElement>('[data-setting-key]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-setting-key') as keyof typeof s;
+          if (!key) return;
+          uiSound.playButtonPop();
+          metaManager.updateSettings({ [key]: !metaManager.getState().settings[key] });
+          renderModal();
+        });
+      });
+    };
+    backdrop.onclick = (e) => {
+      if (e.target === backdrop) this.closeSettingsModal();
+    };
+    renderModal();
+    backdrop.style.display = 'flex';
+  }
+
+  public closeSettingsModal(): void {
+    const backdrop = this.container.querySelector('#nav-settings-modal') as HTMLElement | null;
+    if (backdrop) {
+      backdrop.style.display = 'none';
+      backdrop.innerHTML = '';
+    }
+  }
+
+  private renderSettingToggle(key: string, label: string, enabled: boolean): string {
+    return `
+      <div class="nav-setting-row">
+        <span class="nav-setting-label">${label}</span>
+        <button class="nav-setting-toggle ui-btn-3d ${enabled ? 'is-on' : 'is-off'}" data-setting-key="${key}">
+          ${enabled ? 'BẬT' : 'TẮT'}
+        </button>
+      </div>
+    `;
   }
 
   public getActiveTab(): NavTabId {
@@ -210,7 +318,10 @@ export class NavFrame {
 
     switch (tabId) {
       case 'home':
-        this.currentScreenInstance = new HomeScreen(startGame);
+        this.currentScreenInstance = new HomeScreen(startGame, {
+          onOpenNoAds: () => this.switchTab('shop'),
+          onShowToast: (msg) => this.showToast(msg),
+        });
         break;
       case 'shop':
         this.currentScreenInstance = new ShopScreen();
@@ -245,6 +356,10 @@ export class NavFrame {
   }
 
   public destroy(): void {
+    if (this.toastTimerId !== null) {
+      window.clearTimeout(this.toastTimerId);
+      this.toastTimerId = null;
+    }
     if (this.unsubscribeMeta) {
       this.unsubscribeMeta();
     }
