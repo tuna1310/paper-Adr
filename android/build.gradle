@@ -24,6 +24,14 @@ allprojects {
     }
 }
 
+subprojects {
+    def rootPath = rootProject.projectDir.toPath().toAbsolutePath().normalize()
+    def subPath = project.projectDir.toPath().toAbsolutePath().normalize()
+    if (!subPath.startsWith(rootPath)) {
+        project.layout.buildDirectory.set(file("${rootProject.projectDir}/build/subprojects/${project.name}"))
+    }
+}
+
 task clean(type: Delete) {
-    delete rootProject.buildDir
+    delete rootProject.layout.buildDirectory
 }
