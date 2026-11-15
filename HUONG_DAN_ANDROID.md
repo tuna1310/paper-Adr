@@ -35,15 +35,16 @@ $adb = "$env:ANDROID_HOME\platform-tools\adb.exe"
    - Khi bảng **"Cho phép gỡ lỗi USB? (Allow USB debugging?)"** hiện ra, tích **"Luôn cho phép từ máy tính này (Always allow from this computer)"** rồi bấm **Cho phép (Allow)**.
    - Kiểm tra chế độ USB trên thanh thông báo: chọn **Truyền tệp / Android Auto (Transferring files)** thay vì *Chỉ sạc*.
 
-Kiểm tra kết nối từ PC:
+Kiểm tra kết nối từ PC (ưu tiên USB `R5CWA26LE6N`, tự chuyển sang Wi-Fi TLS `SM_A236E` nếu USB `offline`/chưa cắm):
 
 ```powershell
 & $adb start-server
-Start-Sleep -Seconds 2
+Start-Sleep -Seconds 3
 & $adb devices -l
+& $adb mdns services
 ```
 
-Kết quả đạt chuẩn phải có trạng thái **`device`** (ví dụ `R5CWA26LE6N ... device` hoặc entry wireless `adb-R5CWA26LE6N-..._adb-tls-connect._tcp device model:SM_A236E`).
+Kết quả đạt chuẩn phải có ít nhất 1 dòng ở trạng thái **`device`** (ví dụ `R5CWA26LE6N ... device` hoặc entry wireless `adb-R5CWA26LE6N-..._adb-tls-connect._tcp device model:SM_A236E`).
 
 ---
 
@@ -68,25 +69,31 @@ Copy-Item "android\app\build\outputs\apk\debug\app-debug.apk" "builds\app-debug.
 
 *(Hoặc dùng script rút gọn trong `package.json`: `npm run android:build`)*
 
-### Cách 2: Cài trực tiếp file `builds/app-debug.apk` có sẵn
+### Cách 2: Cài trực tiếp file `builds/app-debug.apk` có sẵn & kiểm tra gameplay + FPS/jank
 
-Thay `<DEVICE_ID>` bằng ID đang có trạng thái `device` trong `adb devices -l` (ưu tiên `R5CWA26LE6N`; nếu USB đang `offline` mà Wireless Debugging đang `device` thì dùng ID wireless như `192.168.1.154:46773` hoặc `adb-R5CWA26LE6N-..._adb-tls-connect._tcp`):
+Thay `<DEVICE_ID>` bằng ID đang có trạng thái `device` trong `adb devices -l` (ưu tiên `R5CWA26LE6N`; nếu USB chưa cắm hoặc `offline` mà Wireless Debugging đang `device` thì dùng ID wireless như `adb-R5CWA26LE6N-..._adb-tls-connect._tcp` hoặc `<IP>:<PORT>`):
 
 ```powershell
 $adb = "C:\Users\Admin\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-$device = "R5CWA26LE6N" # đổi sang ID wireless nếu USB offline
+$device = "R5CWA26LE6N" # hoặc ID Wi-Fi TLS đã xác nhận ro.serialno=R5CWA26LE6N
 
 & $adb -s $device install -r "builds\app-debug.apk"
+& $adb -s $device logcat -c
 & $adb -s $device shell input keyevent KEYCODE_WAKEUP
 & $adb -s $device shell am force-stop com.paperclone.game
 & $adb -s $device shell am start -W -n com.paperclone.game/.MainActivity
-```
+Start-Sleep -Seconds 3
 
-Kiểm tra app đang chạy & xem log lỗi WebView/JS (nếu có):
+# Reset bộ đếm gfxinfo trước khi test vào trận để đo chính xác jank trong trận (mục tiêu < 2%)
+& $adb -s $device shell dumpsys gfxinfo com.paperclone.game reset
+& $adb -s $device shell input tap 540 2140
+Start-Sleep -Milliseconds 800
+& $adb -s $device shell input swipe 540 1500 820 1500 700
+& $adb -s $device shell input swipe 540 1500 540 1200 700
 
-```powershell
-& $adb -s $device shell pidof com.paperclone.game
-& $adb -s $device logcat -d -v time *:E Capacitor:D SystemBars:D chromium:I | Select-Object -Last 50
+# Kiểm tra 0 lỗi JS & đo FPS / Jank %
+& $adb -s $device logcat -d -v time *:E Capacitor:D SystemBars:D chromium:I | Select-String -Pattern "JavaScript Error|Uncaught|TypeError"
+& $adb -s $device shell "dumpsys gfxinfo com.paperclone.game" | Select-Object -First 35
 ```
 
 ---
@@ -136,9 +143,25 @@ node -e "const fs = require('fs'); const b = fs.readFileSync('screenshots/device
 
 ---
 
-## 6. Xử lý sự cố khi thiết bị `offline`, `unauthorized` hoặc không thấy máy
+## 6. Xử lý sự cố khi thiết bị `offline`, `unauthorized` hoặc mất kết nối (như hiện tại)
 
 > ⛔ **Nguyên tắc bắt buộc:** Nếu `adb devices -l` trống, `offline` toàn bộ hoặc `unauthorized`, **DỪNG** các bước cài APK và xử lý kết nối theo từng trường hợp dưới đây trước khi chạy tiếp.
+
+### Trường hợp hiện tại trên PC (Cáp USB rút / Wireless Debugging tự tắt)
+Nếu kiểm tra thấy:
+- `Get-PnpDevice` không có thiết bị Samsung USB (chưa cắm cáp USB hoặc cổng USB mất kết nối), **và**
+- `adb devices -l` trống & `adb mdns services` trống (dù ping `192.168.1.154` vẫn thông mạng, cổng Wireless Debugging cũ như `:46773` báo `Connection refused 10061` do Samsung One UI tự tắt/đổi cổng Wireless Debugging sau khi khóa màn hình hoặc ngắt kết nối):
+
+**Cách khôi phục nhanh trong 15 giây:**
+1. **Cách nhanh nhất (USB):** Cắm lại cáp USB dữ liệu vào PC và `SM_A236E`, mở khóa điện thoại, chọn chế độ **Truyền tệp (MTP)** và bấm **Cho phép (Allow)** nếu hiện bảng RSA.
+2. **Hoặc dùng Wi-Fi TLS (không cần cáp):**
+   - Trên `SM_A236E`, vào **Cài đặt → Cài đặt cho người phát triển → Gỡ lỗi không dây (Wireless debugging)** → gạt **BẬT** lại (nếu đã từng pair với PC này, `adb mdns services` sẽ tự nhận ngay trong 2–3 giây!).
+   - Nếu vẫn chưa hiện trong `adb devices -l`, chạm vào dòng **Gỡ lỗi không dây** để xem `IP:PORT` mới đang hiển thị trên màn hình (ví dụ `192.168.1.154:XXXXX`) rồi chạy:
+     ```powershell
+     & $adb connect 192.168.1.154:<PORT_MOI>
+     & $adb devices -l
+     ```
+   - Nếu cổng ghép nối đã đổi hoặc chưa từng ghép nối, bấm **Ghép nối thiết bị bằng mã ghép nối (Pair device with pairing code)** rồi chạy `& $adb pair 192.168.1.154:<PAIR_PORT>` và nhập mã 6 số.
 
 ### Trường hợp A: `unauthorized` (Chưa cấp quyền RSA cho PC)
 1. Mở khóa màn hình điện thoại — hộp thoại **"Cho phép gỡ lỗi USB?"** đang chờ bấm **Cho phép**.
@@ -149,6 +172,7 @@ node -e "const fs = require('fs'); const b = fs.readFileSync('screenshots/device
      ```powershell
      & $adb kill-server
      & $adb start-server
+     Start-Sleep -Seconds 2
      & $adb devices -l
      ```
    - Rút cáp cắm lại, chọn **Always allow from this computer → Allow**.
@@ -157,8 +181,8 @@ node -e "const fs = require('fs'); const b = fs.readFileSync('screenshots/device
 ### Trường hợp B: `offline` (USB `R5CWA26LE6N offline` hoặc mDNS `offline`)
 1. **Kiểm tra xem có transport khác của cùng máy đang `device` không:**
    - Chạy `& $adb devices -l` và `& $adb mdns services`.
-   - Đôi khi USB `R5CWA26LE6N` báo `offline` do lỏng cáp/sập cổng USB trong lúc **Wireless Debugging** (`adb-R5CWA26LE6N-..._adb-tls-connect._tcp` hoặc `<IP>:<PORT>`) vẫn ở trạng thái `device`.
-   - Nếu `adb mdns services` hiện `<IP>:<PORT>` (ví dụ `192.168.1.154:46773`), chạy `& $adb connect <IP>:<PORT>` rồi xác nhận bằng `& $adb -s <IP>:<PORT> shell getprop ro.serialno` (phải trả về `R5CWA26LE6N`).
+   - Đôi khi USB `R5CWA26LE6N` báo `offline` trong lúc **Wireless Debugging** (`adb-R5CWA26LE6N-..._adb-tls-connect._tcp` hoặc `<IP>:<PORT>`) vẫn ở trạng thái `device`.
+   - Nếu `adb mdns services` hiện `<IP>:<PORT>`, chạy `& $adb connect <IP>:<PORT>` rồi xác nhận bằng `& $adb -s <IP>:<PORT> shell getprop ro.serialno` (phải trả về `R5CWA26LE6N`).
 2. **Nếu muốn khôi phục kết nối USB `R5CWA26LE6N` về `device`:**
    - Mở khóa điện thoại, đổi chế độ USB sang **Truyền tệp (MTP)** nếu đang ở *Chỉ sạc*.
    - Rút cáp USB và cắm vào cổng USB khác (ưu tiên cổng USB 3.0 trực tiếp trên mainboard, tránh hub chia cổng).
@@ -168,7 +192,7 @@ node -e "const fs = require('fs'); const b = fs.readFileSync('screenshots/device
      & $adb kill-server
      Start-Sleep -Seconds 1
      & $adb start-server
-     Start-Sleep -Seconds 2
+     Start-Sleep -Seconds 3
      & $adb devices -l
      ```
 3. **Nếu có nhiều dòng trong `adb devices` (ví dụ 1 `offline` + 1 `device`):**
@@ -177,9 +201,7 @@ node -e "const fs = require('fs'); const b = fs.readFileSync('screenshots/device
 ### Trường hợp C: Không hiện thiết bị nào (`List of devices attached` trống)
 1. Kiểm tra Device Manager xem đã nhận **SAMSUNG Android ADB Interface** chưa (nếu có dấu chấm than vàng, cài lại Samsung USB Driver).
 2. Thử cáp USB-C khác (nhiều dây sạc giá rẻ chỉ có dây nguồn, không có dây dữ liệu D+/D-).
-3. Nếu dùng Wireless Debugging mà chưa ghép nối lần nào:
-   - Trên điện thoại vào **Developer options → Wireless debugging → Pair device with pairing code**.
-   - Trên PC chạy `& $adb pair <IP>:<PAIR_PORT>`, nhập mã 6 số, sau đó `& $adb connect <IP>:<CONNECT_PORT>`.
+3. Nếu dùng Wireless Debugging, kiểm tra điện thoại và PC đang ở cùng dải Wi-Fi và công tắc **Gỡ lỗi không dây** đang BẬT.
 
 ### Trường hợp D: Lỗi Gradle `Unable to delete directory ... node_modules\@capacitor\android\capacitor\build`
 - Nguyên nhân trên Windows: thư mục `node_modules` nằm trong OneDrive hoặc bị lock từ build cũ.

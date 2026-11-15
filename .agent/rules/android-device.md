@@ -4,39 +4,44 @@ Every milestone across all streams (**Luồng A / B / C**) MUST pass real Androi
 
 ---
 
-## 1. Mandatory Pre-Flight Toolchain & Device Check (No Silent Skipping)
+## 1. Mandatory Pre-Flight Toolchain & Transport Selection (USB First -> Wi-Fi TLS Fallback)
 
-Before running any Android build or deploy step, verify ALL required tools and device state:
+Before running any Android build or deploy step, verify ALL required tools and select the active device transport automatically:
 
 ```powershell
 node -v
 npm -v
 & "C:\Users\Admin\.jdks\jbr-21.0.11\bin\java.exe" -version
-Test-Path "C:\Users\Admin\AppData\Local\Android\Sdk\platform-tools\adb.exe"
 $adb = "C:\Users\Admin\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+Test-Path $adb
 & $adb start-server
-Start-Sleep -Seconds 2
+Start-Sleep -Seconds 3
 & $adb devices -l
+& $adb mdns services
 ```
 
-### Hard Stop Rule on Missing / Offline / Unauthorized Device
-- **NEVER silently skip** device installation, launch, or screenshot capture if no authorized `device` transport is present.
-- If `adb devices -l` lists **no devices**, or ALL matching transports for `R5CWA26LE6N` show `offline` or `unauthorized`:
-  1. **STOP** installation/launch/screenshot steps immediately (do NOT fabricate or reuse old screenshots).
-  2. Direct the user to the exact troubleshooting steps in [HUONG_DAN_ANDROID.md](../../HUONG_DAN_ANDROID.md).
-  3. Report the exact `adb devices -l` output as a blocker.
-- **USB vs Wireless Debugging Multi-Transport Rule:**
-  - `adb devices -l` may show both USB (`R5CWA26LE6N`) and Wireless TLS Debugging (`adb-R5CWA26LE6N-*._adb-tls-connect._tcp` or `<ip>:<port>`).
-  - Prefer `R5CWA26LE6N` when its state is `device`. If USB `R5CWA26LE6N` is `offline` while the wireless transport for `SM_A236E` is `device`, confirm `adb -s <transport> shell getprop ro.serialno` equals `R5CWA26LE6N`, use `-s <transport>`, and explicitly report which transport (`USB` vs `Wireless TLS`) was used.
-  - Always pass `-s <transport>` explicitly to every `adb` command so `adb` never fails with `more than one device/emulator`.
-- **Windows Job Object / ADB Server Note:**
-  - In isolated subshells on Windows, an `adb` server spawned by `adb devices` may be terminated when the shell exits, resetting WinUSB/mDNS discovery. Keep `adb nodaemon server` running for multi-step sessions or call `adb start-server` + wait ~2s inside the command block before `adb devices -l`.
+### Automatic Transport Resolution Order (`USB R5CWA26LE6N` -> `Wi-Fi TLS SM_A236E`)
+1. **Priority 1 — USB Transport (`R5CWA26LE6N`):**
+   - Check `adb devices -l` for `^R5CWA26LE6N\s+device\b`. If online, use `-s R5CWA26LE6N`.
+2. **Priority 2 — Wi-Fi TLS Debugging Fallback (`SM_A236E`, `ro.serialno = R5CWA26LE6N`):**
+   - If USB `R5CWA26LE6N` is `offline` or missing:
+     - Check `adb devices -l` for any wireless `device` entry (`adb-R5CWA26LE6N-*._adb-tls-connect._tcp` or `<ip>:<port>.*model:SM_A236E`).
+     - If none is connected yet, check `adb mdns services` for `adb-R5CWA26LE6N-.*_adb-tls-connect._tcp` (`<ip>:<port>`) and run `adb connect <ip>:<port>`.
+     - Confirm identity before deploying: `(& $adb -s $candidate shell getprop ro.serialno).Trim() -eq "R5CWA26LE6N"`.
+3. **Hard Stop Rule on Missing / Offline / Unauthorized Device:**
+   - **NEVER silently skip** device installation, gameplay launch, FPS/jank measurement, or screenshot capture if neither USB `R5CWA26LE6N` nor verified Wi-Fi TLS `SM_A236E` is in `device` state.
+   - If NO valid `device` transport exists (empty `adb devices -l`, or all entries `offline`/`unauthorized`):
+     1. **STOP** installation, gameplay test, and screenshot steps immediately (do NOT fabricate or reuse old screenshots/metrics).
+     2. Direct the user to the exact troubleshooting steps in [HUONG_DAN_ANDROID.md](../../HUONG_DAN_ANDROID.md).
+     3. Report exact `adb devices -l` / `adb mdns services` / USB PnP status as a hard blocker.
+- **Multi-Transport Safety:** Always pass `-s $target` explicitly to every `adb` command so `adb` never fails when both an `offline` USB entry and a `device` Wi-Fi TLS entry exist.
+- **Windows Job Object / ADB Server Note:** In transient Windows subshells, `adb` servers spawned inside a single command may terminate when the shell exits. Keep `adb nodaemon server` running during multi-step sessions or call `adb start-server` + `Start-Sleep -Seconds 3` inside the command block.
 
 ---
 
 ## 2. Mandatory Build, Sync & APK Pipeline
 
-Run from the active worktree root (with `$env:JAVA_HOME = "C:\Users\Admin\.jdks\jbr-21.0.11"` and `$env:ANDROID_HOME = "C:\Users\Admin\AppData\Local\Android\Sdk"`):
+Run from the active worktree root (`$env:JAVA_HOME = "C:\Users\Admin\.jdks\jbr-21.0.11"`, `$env:ANDROID_HOME = "C:\Users\Admin\AppData\Local\Android\Sdk"`):
 
 1. **Unit tests:**
    ```powershell
@@ -50,8 +55,8 @@ Run from the active worktree root (with `$env:JAVA_HOME = "C:\Users\Admin\.jdks\
    ```powershell
    npx cap sync android
    ```
-   - Note: Inside `.worktrees/<branch>`, `node_modules` is an NTFS junction to the root repo, so `npx cap sync android` rewrites `android/capacitor.settings.gradle` to `../../../node_modules/...`. Restore `android/capacitor.settings.gradle` (`../node_modules/...`, which resolves in both the worktree via junction and `main`) and whitespace-only CRLF churn on `android/app/capacitor.build.gradle` before committing if targeting `main`, or re-run `npx cap sync android` on `main` after merge.
-   - `android/build.gradle` redirects external Capacitor library subprojects (`:capacitor-android`, `:capacitor-haptics`, `:capacitor-preferences`) into `android/build/subprojects/` to avoid stale `ReadOnly` directory locks or OneDrive sync conflicts inside the shared root `node_modules/`.
+   - Inside `.worktrees/<branch>`, `node_modules` is an NTFS junction, so `npx cap sync android` rewrites `android/capacitor.settings.gradle` to `../../../node_modules/...`. Restore `android/capacitor.settings.gradle` (`../node_modules/...`, valid in both worktree junction and `main`) and whitespace-only CRLF churn on `android/app/capacitor.build.gradle` before committing.
+   - `android/build.gradle` isolates external Capacitor library `layout.buildDirectory` into `android/build/subprojects/` to avoid stale `ReadOnly` locks inside shared root `node_modules/`.
 4. **Build Debug APK & export to `builds/app-debug.apk`:**
    ```powershell
    $env:JAVA_HOME = "C:\Users\Admin\.jdks\jbr-21.0.11"
@@ -63,11 +68,13 @@ Run from the active worktree root (with `$env:JAVA_HOME = "C:\Users\Admin\.jdks\
 
 ---
 
-## 3. Install, Cold Launch & Runtime Verification
+## 3. Install, Live Gameplay Test, 0-JS-Error Check & FPS / Jank < 2% Gate
+
+Every milestone build MUST verify **live gameplay** on `SM_A236E`, not just the home screen:
 
 ```powershell
 $adb = "C:\Users\Admin\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-$target = "<verified_device_transport>" # R5CWA26LE6N or verified SM_A236E wireless transport
+$target = "<verified_R5CWA26LE6N_or_wifi_tls_target>"
 
 & $adb -s $target install -r "builds\app-debug.apk"
 & $adb -s $target logcat -c
@@ -75,62 +82,66 @@ $target = "<verified_device_transport>" # R5CWA26LE6N or verified SM_A236E wirel
 & $adb -s $target shell am force-stop com.paperclone.game
 & $adb -s $target shell am start -W -n com.paperclone.game/.MainActivity
 Start-Sleep -Seconds 3
+
+# Reset gfxinfo right before active gameplay so cold-launch frame skips don't skew steady-state jank
+& $adb -s $target shell dumpsys gfxinfo com.paperclone.game reset
+
+# Tap Play button (~bottom center on 1080x2408: x=540, y=2140) and steer continuously for 2-3s
+& $adb -s $target shell input tap 540 2140
+Start-Sleep -Milliseconds 800
+& $adb -s $target shell input swipe 540 1500 820 1500 700
+& $adb -s $target shell input swipe 540 1500 540 1200 700
+& $adb -s $target shell input swipe 540 1500 260 1500 700
+& $adb -s $target shell input swipe 540 1500 540 1780 700
 ```
 
-Always verify and record:
-- **Process & Window Focus:**
-  - `adb -s $target shell pidof com.paperclone.game` (non-empty PID)
-  - `adb -s $target shell "dumpsys window displays | grep -E 'mCurrentFocus|mFocusedApp'"` (`com.paperclone.game/.MainActivity`)
-  - Immersive check: confirm `StatusBar` and `NavigationBar0` report `isVisible=false`.
-- **Logcat Error Audit:**
-  - `adb -s $target logcat -d -v time *:E Capacitor:D SystemBars:D chromium:I`
-  - Inspect for `Capacitor` `JavaScript Error`, missing asset 404s, WebView/WebAudio issues, or plugin failures.
-- **Frame Timing / GPU Metrics:**
-  - `adb -s $target shell "dumpsys gfxinfo com.paperclone.game"` (capture 50th/90th/95th/99th frame & GPU percentiles and janky frame %).
+### Mandatory Post-Gameplay Checks
+1. **Zero JavaScript Errors (`logcat`):**
+   ```powershell
+   & $adb -s $target logcat -d -v time *:E Capacitor:D SystemBars:D chromium:I | Select-String -Pattern "JavaScript Error|Uncaught|TypeError|ReferenceError|FATAL"
+   ```
+   - Must report **0 JavaScript runtime errors** (e.g., no `renderJoystick360` or uncaught exceptions).
+2. **FPS & `dumpsys gfxinfo` Jank Gate (Target: Jank < 2%):**
+   ```powershell
+   & $adb -s $target shell "dumpsys gfxinfo com.paperclone.game"
+   ```
+   - Record **Total frames rendered**, **Janky frames + %** (target **`< 2.0%`** steady-state gameplay), **50th / 90th / 95th / 99th frame percentiles**, **GPU percentiles**, and estimated effective FPS (`1000 / 50th_percentile_ms` or SurfaceFlinger refresh vs frame cadence).
+   - Confirm `StatusBar` and `NavigationBar0` remain `isVisible=false` (immersive full-bleed `1080x2408`).
 
 ---
 
 ## 4. Clean Binary PNG Screenshot Capture (Windows PowerShell Caveat)
 
-> **CRITICAL:** NEVER run `adb exec-out screencap -p > screenshots\out.png` directly inside Windows PowerShell 5.1. PowerShell's `>` operator decodes stdout as text and corrupts binary PNG files (UTF-16LE / CRLF mangling).
+> **CRITICAL:** NEVER run `adb exec-out screencap -p > screenshots\out.png` directly inside Windows PowerShell 5.1. PowerShell's `>` operator decodes stdout as text and corrupts binary PNG bytes.
 
-Use **either** `cmd /c` raw binary redirection **or** `adb pull`:
+Use **`cmd /c`** raw binary redirection (or `adb shell screencap` + `adb pull`):
 
 ```powershell
 New-Item -ItemType Directory -Force -Path screenshots | Out-Null
-# Option A: raw binary redirection via cmd.exe
-cmd /c "`"$adb`" -s $target exec-out screencap -p > screenshots\milestone_device.png"
-
-# Option B: on-device capture + binary pull (immune to shell encoding)
-# & $adb -s $target shell screencap -p /sdcard/cap_tmp.png
-# & $adb -s $target pull /sdcard/cap_tmp.png screenshots\milestone_device.png
-# & $adb -s $target shell rm /sdcard/cap_tmp.png
+cmd /c "`"$adb`" -s $target exec-out screencap -p > screenshots\<name>.png"
 ```
 
-Always validate the PNG signature and pixel dimensions before inspecting visually:
+Validate PNG header + dimensions (`1080 x 2408`) and inspect visually with `read_file`:
 
 ```powershell
-node -e "const fs = require('fs'); const b = fs.readFileSync('screenshots/milestone_device.png'); console.log({ bytes: b.length, sig: b.subarray(0,8).toString('hex'), valid: b.subarray(0,8).toString('hex') === '89504e470d0a1a0a', w: b.readUInt32BE(16), h: b.readUInt32BE(20) });"
+node -e "const fs = require('fs'); const b = fs.readFileSync('screenshots/<name>.png'); console.log({ bytes: b.length, sig: b.subarray(0,8).toString('hex'), valid: b.subarray(0,8).toString('hex') === '89504e470d0a1a0a', w: b.readUInt32BE(16), h: b.readUInt32BE(20) });"
 ```
 
-Then visually inspect the PNG file directly to check:
-- **Notch / Safe Area:** Samsung `SM_A236E` has a `65px` (`23.11dp`) top waterdrop `DisplayCutout`. Top HUD controls must sit cleanly below it via `env(safe-area-inset-top)`.
-- **Immersive Fullscreen:** Full `1080x2408` edge-to-edge canvas with no solid white/black status or navigation bar strips.
-- **Touch / Audio / Haptics:** Confirm `touch-action: none`, Web Audio unlock/buffer initialization, and `@capacitor/haptics` (`VIBRATE`) behavior when testing interactive flows.
+Check visually:
+- **Notch / Safe Area:** `SM_A236E` `65px` (`23.11dp`) top `DisplayCutout` is respected via `env(safe-area-inset-top)`.
+- **Gameplay Rendering:** Arena boundary, territory blobs, trails, characters, bots, HUD bar, and joystick feedback render cleanly.
 
 ---
 
-## 5. Live Reload Workflow (Rapid UI/Gameplay Iteration)
-
-During active UI/skin development, run Vite dev server + Capacitor live reload on the same Wi-Fi LAN (`vite.config.ts` already sets `host: true`, port `5173`):
+## 5. Live Reload Workflow
 
 ```powershell
 $env:JAVA_HOME = "C:\Users\Admin\.jdks\jbr-21.0.11"
 $env:ANDROID_HOME = "C:\Users\Admin\AppData\Local\Android\Sdk"
 npx cap run android -l --external
-# Or specify explicit target:
+# Or explicit target:
 # npx cap run android -l --external --target <device_id>
 ```
 
-- Ensure Windows Firewall allows Node/Vite TCP port `5173` on Private Wi-Fi.
-- **Important:** `npx cap run android -l` temporarily writes `server.url` into `android/app/src/main/assets/capacitor.config.json`. Always run a clean `npm run android:build` (or `npx cap sync android` + `gradlew.bat assembleDebug`) after live-reload testing so `builds/app-debug.apk` bundles offline `dist/` assets rather than a LAN dev URL.
+- Ensure Windows Firewall allows port `5173` on Private Wi-Fi.
+- Always run `npm run android:build` (or `npm run build && npx cap sync android` + `gradlew.bat assembleDebug`) after live-reload testing so `builds/app-debug.apk` bundles offline `dist/` assets rather than a LAN dev URL.
