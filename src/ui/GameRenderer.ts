@@ -4,9 +4,19 @@ import { TerritoryRenderer } from './TerritoryRenderer';
 import { HudRenderer } from './HudRenderer';
 
 export class GameRenderer {
-  public static isPlayAgainClicked = HudRenderer.isPlayAgainClicked;
-  public static isHomeClicked = HudRenderer.isHomeClicked;
-  public static renderHUD = HudRenderer.renderHUD;
+  public static isPlayAgainClicked(x: number, y: number, viewWidth: number, viewHeight: number): boolean {
+    return HudRenderer.isPlayAgainClicked(x, y, viewWidth, viewHeight);
+  }
+
+  public static isHomeClicked(x: number, y: number, viewWidth: number, viewHeight: number): boolean {
+    return HudRenderer.isHomeClicked(x, y, viewWidth, viewHeight);
+  }
+
+  public static renderHUD(
+    ...args: Parameters<typeof HudRenderer.renderHUD>
+  ): void {
+    HudRenderer.renderHUD(...args);
+  }
 
   public static renderWorld(
     ctx: CanvasRenderingContext2D,

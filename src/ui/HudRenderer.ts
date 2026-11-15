@@ -91,7 +91,7 @@ export class HudRenderer {
 
     // 3. 360-Degree Rotatable Virtual Joystick
     if (engine.state === 'PLAYING' && joystick) {
-      this.renderJoystick360(ctx, joystick, engine.player.color);
+      HudRenderer.renderJoystick360(ctx, joystick, engine.player.color);
     }
 
     // 4. Game Over / Victory Overlay

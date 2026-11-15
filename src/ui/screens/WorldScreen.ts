@@ -1,5 +1,6 @@
 import countriesData from '../../meta/data/countries.json';
 import skinsData from '../../meta/data/skins.json';
+import { isContinentUnlocked } from '../../meta/continentUnlock';
 import { metaManager } from '../../meta/MetaManager';
 import { countryFlagSvg, skinCubeSvg } from '../svgIcons';
 import { uiSound } from '../uiSound';
@@ -45,10 +46,12 @@ export class WorldScreen {
     const continents: MapContinentZone[] = [];
     const countries: MapCountryNode[] = [];
 
-    (countriesData.continents as any[]).forEach((cont, idx) => {
+    const allContinents = countriesData.continents as any[];
+    allContinents.forEach((cont, idx) => {
       const slot = getContinentSlot(cont.id, idx);
       const prog = metaManager.getContinentProgress(cont.id);
-      const unlocked = idx === 0 || prog.completed > 0 || (cont as any).unlockedByDefault === true || true;
+      const prevProg = idx > 0 ? metaManager.getContinentProgress(allContinents[idx - 1].id) : null;
+      const unlocked = isContinentUnlocked(idx, prog, prevProg, (cont as any).unlockedByDefault === true);
       continents.push({
         id: cont.id,
         name: cont.name,
@@ -125,7 +128,9 @@ export class WorldScreen {
         uiSound.playButtonPop();
         this.selectedCountryId = node.id;
         this.selectedContinentId = node.continentId;
-        metaManager.setActiveCountry(node.id);
+        if (node.unlocked) {
+          metaManager.setActiveCountry(node.id);
+        }
         this.refreshOverlay();
       },
       (visible, dirX, dirY) => {
@@ -207,7 +212,9 @@ export class WorldScreen {
               <div class="wcc-sub">${selCountry.completed ? '✓ Đã chinh phục 100%' : `Tiến độ: ${selCountry.percent}% • ${selCont.name}`}</div>
             </div>
           </div>
-          <button class="wcc-play-btn ui-btn-3d" id="btn-world-select-play">▶ Chơi ngay</button>
+          <button class="wcc-play-btn ui-btn-3d" id="btn-world-select-play" ${selCont.unlocked ? '' : 'disabled'}>
+            ${selCont.unlocked ? '▶ Chơi ngay' : '🔒 Bị khóa'}
+          </button>
         </div>
       `;
 
@@ -215,13 +222,16 @@ export class WorldScreen {
         b.addEventListener('click', () => {
           uiSound.playButtonPop();
           this.selectedCountryId = b.getAttribute('data-cid')!;
-          metaManager.setActiveCountry(this.selectedCountryId);
+          if (selCont.unlocked) {
+            metaManager.setActiveCountry(this.selectedCountryId);
+          }
           this.mapCanvas?.centerOnCountry(this.selectedCountryId);
           this.refreshOverlay();
         });
       });
 
       dock.querySelector('#btn-world-select-play')?.addEventListener('click', () => {
+        if (!selCont.unlocked) return;
         uiSound.playButtonPop();
         metaManager.setActiveCountry(selCountry.id);
         this.onStartGame?.();

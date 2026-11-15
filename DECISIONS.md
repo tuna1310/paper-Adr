@@ -1,0 +1,10 @@
+# DECISIONS.md — Nhật ký Quyết định Kỹ thuật & Sản phẩm
+
+1. **Cách ly 3 luồng làm việc qua 3 nhánh Git & worktree (`a-ui`, `b-android`, `c-skins`)** — tránh xung đột file giữa giao diện/luật chơi, thiết lập Android và bộ sinh 100 skin trong quá trình phát triển song song.
+2. **Sửa lỗi P0 `renderJoystick360` bằng static call tường minh và wrapper ủy quyền (`HudRenderer.ts`, `GameRenderer.ts`)** — nguyên nhân gốc là `GameRenderer.renderHUD = HudRenderer.renderHUD` làm `this` trỏ về `GameRenderer` thay vì `HudRenderer` khi render frame 1.
+3. **Bỏ cờ `|| true` ép mở khóa châu lục (`WorldScreen.ts`)** — áp dụng quy tắc mở khóa tuần tự theo khu vực (mở sẵn Bắc Mỹ `idx === 0`, các châu lục sau mở khi châu trước đạt tối thiểu `3` quốc gia hoàn thành hoặc có quốc gia trong châu đã hoàn thành).
+4. **Hành vi sau `"Không, cảm ơn"` ở màn Game Over (PO chốt)** — hiển thị thẻ tổng kết trận đấu (xu nhặt được, cúp thay đổi, `%` quốc gia tăng, số lượt hạ gục) trước khi quay về Màn Nhà.
+5. **Thang bậc Hạng ĐỒNG I–III và 27 bậc Rank (PO chốt)** — số `1588` trong video là số cúp hiện tại của người chơi; dùng mốc chuẩn `ĐỒNG I = 0` (Top 99%), `ĐỒNG II = 650` (Top 95%), `ĐỒNG III = 1300` (Top 91%), các bậc trên (`BẠC I` tới `HUYỀN THOẠI III`) giữ đúng bảng số đo từ Video A.
+6. **Tiến độ Quốc gia cộng dồn & bỏ ngưỡng thắng 60% trong ván (PO chốt)** — `%` quốc gia được cộng dồn qua nhiều trận (đạt `100%` hoàn thành nước); ván thường chỉ kết thúc khi người chơi bị hạ gục; chiếm trọn `100%` bản đồ (khớp vương miện cuối thanh `%`) mở **"Trò chơi Thưởng"** (màn nhặt xu & đá quý + thưởng rương cao cấp + tăng tiến độ nhiệm vụ `Đạt N Trò chơi Thưởng`).
+7. **Nhúng GeoJSON rút gọn (~60KB) nội bộ cho Màn 9 Bản đồ Thế giới (PO chốt)** — vẽ biên giới quốc gia sát video tham chiếu mà không cài thêm thư viện npm ngoài.
+8. **Cô lập `buildDirectory` cho các subproject Capacitor Android trên Windows (`android/build.gradle`)** — chuyển thư mục build của plugin ngoài `node_modules` vào `android/build/subprojects/` để khắc phục lỗi khóa file/quyền đọc qua NTFS junction và OneDrive.
