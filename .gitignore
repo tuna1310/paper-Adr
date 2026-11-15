@@ -12,4 +12,5 @@ paper-territory/
 .worktrees/
 *.apk
 img/*.mp4
+.vscode/
 !builds/app-debug.apk
